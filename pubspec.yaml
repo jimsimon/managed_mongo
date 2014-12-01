@@ -1,0 +1,13 @@
+name: managed_mongo
+version: 0.0.1
+description: A wrapper for running a managed mongo instance from inside a Dart library or application.
+author: Jim Simon <jim.j.simon@gmail.com>
+homepage: https://github.com/jimsimon/managed_mongo
+documentation: https://github.com/jimsimon/managed_mongo/docs
+dependencies:
+  dart_commons:
+    git:
+      url: https://github.com/jimsimon/dart_commons
+      ref: develop
+dev_dependencies:
+  unittest: 'any'
