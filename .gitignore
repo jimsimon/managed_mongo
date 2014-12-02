@@ -17,12 +17,20 @@ pubspec.lock
 # Ignore intellij files
 .idea/
 *.iml
+*.ipr
+*.iws
+
+# Ignore eclipse files
+.project
 
 # Ignore various archive file formats
 *.zip
 *.tgz
 *.tar.gz
 *.tar
+
+# Ignore OSX specific files and folders
+.DS_STORE/
 
 # Ignore mongodb folder (only needed until cleanup logic is coded)
 test/mongodb*
