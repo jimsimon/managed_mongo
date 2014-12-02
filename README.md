@@ -1,7 +1,10 @@
-Managed MongoDB
+**NOTE: This project is still under development.  It is not 100% functional yet!  As of right now mongodb will not be started up, only the download and extract portions are currently working.**
 =============
 
-Managed MongoDB is a simple wrapper for downloading and running a mongodb server from inside a dart application.
+Managed Mongo
+=============
+
+Managed Mongo is a simple wrapper for downloading and running a MongoDB server from inside a dart application.
 
 Use cases
 ----------
@@ -11,7 +14,7 @@ Use cases
 Example Code
 -------------
 ```dart
-import "package:managed_mongodb/managed_mongodb.dart"
+import "package:managed_mongo/managed_mongo.dart"
 
 main() {
     var downloadUrl = "https://fastdl.mongodb.org/osx/mongodb-osx-x86_64-2.6.5.tgz";
@@ -24,4 +27,23 @@ main() {
         mongodb.stop();
     });
 }
+```
+
+Supported Archive Types
+-----------------------
+The download url must point a properly encoded file with one of the following extensions:
+
+* .zip
+* .tar
+* .tar.gz
+* .tgz
+
+All other file extensions will result in an error.
+
+Dependency Entry (pubspec.yaml)
+----------------
+```
+dependencies:
+  managed_mongpdb:
+    git: https://github.com/jimsimon/managed_mongo.git
 ```
