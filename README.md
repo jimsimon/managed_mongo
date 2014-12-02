@@ -3,11 +3,13 @@ Managed MongoDB
 
 Managed MongoDB is a simple wrapper for downloading and running a mongodb server from inside a dart application.
 
-Use cases:
+Use cases
+----------
 1. Utilizing a real MongoDB instance inside unit and integration tests
 2. Automatic installation and creation of MongoDB on an end-user's machine
 
-Example Code:
+Example Code
+-------------
 ```dart
 import "package:managed_mongodb/managed_mongodb.dart"
 
