@@ -47,3 +47,10 @@ dependencies:
   managed_mongpdb:
     git: https://github.com/jimsimon/managed_mongo.git
 ```
+
+TODO
+-----
+1. Finish implementing start and stop methods
+2. Add documentation -- dartdoc
+3. Further customization options (i.e. other command line flags)
+4. General code cleanup and refactoring
