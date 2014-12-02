@@ -44,7 +44,7 @@ Dependency Entry (pubspec.yaml)
 ----------------
 ```
 dependencies:
-  managed_mongpdb:
+  managed_mongo:
     git: https://github.com/jimsimon/managed_mongo.git
 ```
 

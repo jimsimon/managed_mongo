@@ -6,4 +6,4 @@ import "dart:async";
 import "package:path/path.dart";
 import "package:archive/archive.dart";
 
-part "src/mongod.dart";
+part 'src/mongodb.dart';

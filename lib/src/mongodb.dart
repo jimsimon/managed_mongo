@@ -1,11 +1,11 @@
 part of managed_mongo;
 
-class Mongod {
+class MongoDB {
   String downloadUrl, downloadFolder, host;
   int port;
   bool running = false;
 
-  Mongod(String downloadUrl, String downloadFolder, String host, int port) {
+  MongoDB(String downloadUrl, String downloadFolder, String host, int port) {
     checkNotNull(downloadUrl, "downloadUrl cannot be null");
     checkArgument(downloadUrl.trim().isNotEmpty, "downloadUrl cannot be an empty string");
     checkNotNull(host, "host cannot be null");

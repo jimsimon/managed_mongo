@@ -33,4 +33,4 @@ pubspec.lock
 .DS_STORE/
 
 # Ignore mongodb folder (only needed until cleanup logic is coded)
-test/mongodb*
+test/mongodb-*
