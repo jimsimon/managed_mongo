@@ -5,6 +5,8 @@ author: Jim Simon <jim.j.simon@gmail.com>
 homepage: https://github.com/jimsimon/managed_mongo
 documentation: https://github.com/jimsimon/managed_mongo/docs
 dependencies:
+  path: 'any'
+  archive: 'any'
   dart_commons:
     git:
       url: https://github.com/jimsimon/dart_commons
