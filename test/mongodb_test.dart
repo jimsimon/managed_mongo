@@ -10,12 +10,12 @@ main() {
   test("running flag updates when start and stop are called", () {
     expect(mongod.running, isFalse);
 
-    return mongod.start().then((result){
-      expect(mongod.running, isTrue);
-    }).then((result){
-      mongod.stop();
-      expect(mongod.running, isFalse);
-    });
+    return mongod.start()
+      .then((result){
+        expect(mongod.running, isTrue);
+        mongod.stop();
+        expect(mongod.running, isFalse);
+      });
 
   });
 
@@ -27,15 +27,23 @@ main() {
     expect(() => new MongoDB(" ", "host", "", 123), throwsArgumentError);
   });
 
+  test("throws error when downloadUrl has an invalid extension", () {
+    expect(() => new MongoDB("downloadUrl.bat", "host", "", 123), throwsArgumentError);
+  });
+
   test("throws error when host is null", () {
-    expect(() => new MongoDB("downloadUrl", "", null, 123), throwsArgumentError);
+    expect(() => new MongoDB("downloadUrl.zip", "", null, 123), throwsArgumentError);
   });
 
   test("throws error when host is empty", () {
-    expect(() => new MongoDB("downloadUrl", "", " ", 123), throwsArgumentError);
+    expect(() => new MongoDB("downloadUrl.tgz", "", " ", 123), throwsArgumentError);
   });
 
   test("throws error when port is null", () {
-    expect(() => new MongoDB("downloadUrl", "", "host", null), throwsArgumentError);
+    expect(() => new MongoDB("downloadUrl.tar", "", "host", null), throwsArgumentError);
+  });
+
+  test("does not throw an error when workFolder is null", () {
+    expect(() => new MongoDB("downloadUrl.tar.gz", null, "host", 123), returnsNormally);
   });
 }
