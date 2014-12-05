@@ -7,6 +7,7 @@ class MongoDB {
   String downloadUrl, workFolder, host, _extension;
   int port;
   bool running = false;
+  Completer _stopCompleter = new Completer();
 
   String checkFileExtension(String variableName, String fileNameOrPath) {
     if (!EXTENSION_REG_EXP.hasMatch(fileNameOrPath)) {
@@ -29,13 +30,13 @@ class MongoDB {
     this.port = port;
   }
 
-  void stop() {
+  Future stop() {
     _mongodProcess.kill();
-    running = false;
+    return _stopCompleter.future;
   }
 
   Future start() {
-    return _download().then(_extract).then(_run).whenComplete(() => running = true);
+    return _download().then(_extract).then(_run);
   }
 
   Future _download() {
@@ -68,6 +69,7 @@ class MongoDB {
   }
 
   Future _run(Directory mongoDirectory) {
+    Completer completer = new Completer();
     String mongodPath = join(mongoDirectory.path, "bin", "mongod");
 
     if (Platform.isLinux || Platform.isMacOS) {
@@ -77,12 +79,30 @@ class MongoDB {
     String dataDbPath = join(mongoDirectory.path, "data", "db");
     Directory dataDbDirectory = new Directory(dataDbPath);
     dataDbDirectory.createSync(recursive: true);
-    return Process.start(mongodPath, ["--dbpath", dataDbPath])
+    Process.start(mongodPath, ["--dbpath", dataDbPath])
       .then((Process process) {
-        stdout.addStream(process.stdout);
+        running = true;
+        var processStdout = process.stdout.asBroadcastStream();
+        stdout.addStream(processStdout);
         stderr.addStream(process.stderr);
+
+        processStdout.listen((data) {
+          String line = new String.fromCharCodes(data);
+          if (line.contains("waiting for connections on port")) {
+            completer.complete();
+          }
+        });
+
+        process.exitCode.then((exitCode){
+          running = false;
+          if (exitCode != 0) {
+            completer.completeError("Failed to start mongod due to mongod exit code $exitCode");
+          }
+          _stopCompleter.complete(exitCode);
+        });
         _mongodProcess = process;
       });
+    return completer.future;
   }
 
   Archive _getArchiveForFile(File file) {

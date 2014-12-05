@@ -13,3 +13,4 @@ dependencies:
       ref: develop
 dev_dependencies:
   unittest: 'any'
+  mongo_dart: 'any'
