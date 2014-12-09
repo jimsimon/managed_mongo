@@ -1,5 +1,4 @@
-**NOTE: This project is still under development.  It is not 100% functional yet!  As of right now mongodb will not be started up, only the download and extract portions are currently working.**
-=============
+**NOTE: This project is still under heavy development and is subject to change.**
 
 Managed Mongo
 =============
@@ -16,16 +15,16 @@ Example Code
 ```dart
 import "package:managed_mongo/managed_mongo.dart"
 
-main() {
+main() async {
     var downloadUrl = "https://fastdl.mongodb.org/osx/mongodb-osx-x86_64-2.6.5.tgz";
     var workDirectory = "mongo_work_directory";
     var host = "localhost";
     var port = 27015;
     MongoDB mongodb = new MongoDB(downloadUrl, workDirectory, host, port);
-    mongodb.start().then(() {
-        // your code here
-        mongodb.stop();
-    });
+    await mongodb.start();
+    // your code here
+    int exitCode = await mongodb.stop();
+    print("MongoDB completed with exit code: $exitCode");
 }
 ```
 
@@ -50,7 +49,6 @@ dependencies:
 
 TODO
 -----
-1. Finish implementing start and stop methods
 2. Add documentation -- dartdoc
 3. Further customization options (i.e. other command line flags)
 4. General code cleanup and refactoring
