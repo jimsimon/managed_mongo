@@ -3,18 +3,10 @@ part of managed_mongo;
 class MongoDB {
   final RegExp EXTENSION_REG_EXP = new RegExp(r"(.zip|.tar.gz|.tar|.tgz)");
 
-  Process _mongodProcess;
   String downloadUrl, workFolder, host, _extension;
   int port;
-  bool running = false;
-  Completer _stopCompleter = new Completer();
 
-  String checkFileExtension(String variableName, String fileNameOrPath) {
-    if (!EXTENSION_REG_EXP.hasMatch(fileNameOrPath)) {
-      throw new ArgumentError.value(fileNameOrPath, "downloadUrl");
-    }
-    return EXTENSION_REG_EXP.firstMatch(fileNameOrPath).group(0);
-  }
+  Process _mongodProcess;
 
   MongoDB(String downloadUrl, String workFolder, String host, int port) {
     checkNotNull(downloadUrl, "downloadUrl cannot be null");
@@ -23,85 +15,99 @@ class MongoDB {
     checkArgument(host.trim().isNotEmpty, "downloadUrl cannot be an empty string");
     checkNotNull(port, "port cannot be null");
 
-    this._extension = checkFileExtension("downloadUrl", downloadUrl);
+    this._extension = _checkFileExtension("downloadUrl", downloadUrl);
     this.downloadUrl = downloadUrl;
     this.workFolder = Strings.nonNullOrEmpty(workFolder);
     this.host = host;
     this.port = port;
   }
 
-  Future stop() {
+  Future start() async {
+    File file = await _download();
+    Directory mongoDirectory = await _extract(file);
+    return _run(mongoDirectory);
+  }
+
+  Future<int> stop() async {
     _mongodProcess.kill();
-    return _stopCompleter.future;
+    return await _mongodProcess.exitCode;
   }
 
-  Future start() {
-    return _download().then(_extract).then(_run);
+  String _checkFileExtension(String variableName, String fileNameOrPath) {
+    if (!EXTENSION_REG_EXP.hasMatch(fileNameOrPath)) {
+      throw new ArgumentError.value(fileNameOrPath, "downloadUrl");
+    }
+    return EXTENSION_REG_EXP.firstMatch(fileNameOrPath).group(0);
   }
 
-  Future _download() {
-    Completer completer = new Completer();
-
+  Future _download() async {
     Uri uri = Uri.parse(downloadUrl);
     String filename = uri.pathSegments.last;
 
     String downloadFilePath = join(workFolder, filename);
     File downloadFile = new File(downloadFilePath);
     if (!downloadFile.existsSync()) {
-      new HttpClient().getUrl(uri)
-        .then((HttpClientRequest request) => request.close())
-        .then((HttpClientResponse response) => response.pipe(downloadFile.openWrite()))
-        .then((_) => completer.complete(downloadFile));
-    } else {
-      completer.complete(downloadFile);
+      HttpClientRequest request = await new HttpClient().getUrl(uri);
+      print("Downloading $downloadUrl, this may take awhile.");
+      HttpClientResponse response = await request.close();
+      await response.pipe(downloadFile.openWrite());
+      print("Download complete!");
     }
-    return completer.future;
+    return downloadFile;
   }
 
   Directory _extract(File file) {
     String extractedDirectoryName = Strings.replaceLast(file.path, _extension, "");
     Directory extractedDirectory = new Directory(join(workFolder, extractedDirectoryName));
     if (!extractedDirectory.existsSync()) {
+      print("Extracting ${file.path}");
       var archive = _getArchiveForFile(file);
       _unpackArchive(archive);
+      print("Extraction complete!");
     }
     return extractedDirectory;
   }
 
-  Future _run(Directory mongoDirectory) {
-    Completer completer = new Completer();
-    String mongodPath = join(mongoDirectory.path, "bin", "mongod");
 
+  _ensureMongodIsExecutable(String mongodPath) {
     if (Platform.isLinux || Platform.isMacOS) {
-      Process.runSync("chmod", ["+x", mongodPath], runInShell: true);
+      return Process.run("chmod", ["+x", mongodPath], runInShell: true);
     }
+  }
 
-    String dataDbPath = join(mongoDirectory.path, "data", "db");
+  Future<Process> _createProcess(String mongodPath, String dataDbPath) async {
     Directory dataDbDirectory = new Directory(dataDbPath);
     dataDbDirectory.createSync(recursive: true);
-    Process.start(mongodPath, ["--dbpath", dataDbPath])
-      .then((Process process) {
-        running = true;
-        var processStdout = process.stdout.asBroadcastStream();
-        stdout.addStream(processStdout);
-        stderr.addStream(process.stderr);
+    return await Process.start(mongodPath, ["--dbpath", dataDbPath]);
+  }
 
-        processStdout.listen((data) {
-          String line = new String.fromCharCodes(data);
-          if (line.contains("waiting for connections on port")) {
-            completer.complete();
-          }
-        });
+  Future _run(Directory mongoDirectory) async {
+    Completer completer = new Completer();
 
-        process.exitCode.then((exitCode){
-          running = false;
-          if (exitCode != 0) {
-            completer.completeError("Failed to start mongod due to mongod exit code $exitCode");
-          }
-          _stopCompleter.complete(exitCode);
-        });
-        _mongodProcess = process;
-      });
+    String mongodPath = join(mongoDirectory.path, "bin", "mongod");
+    String dataDbPath = join(mongoDirectory.path, "data", "db");
+
+    await _ensureMongodIsExecutable(mongodPath);
+    Process process = await _createProcess(mongodPath, dataDbPath);
+
+    var processStdout = process.stdout.asBroadcastStream();
+    stdout.addStream(processStdout);
+    stderr.addStream(process.stderr);
+
+    processStdout.listen((data) {
+      String line = new String.fromCharCodes(data);
+      if (line.contains("waiting for connections on port")) {
+        completer.complete();
+      }
+    });
+
+    process.exitCode.then((exitCode) {
+      if (exitCode != 0) {
+        completer.completeError("Failed to start mongod due to mongod exit code $exitCode");
+      }
+    });
+
+    _mongodProcess = process;
     return completer.future;
   }
 

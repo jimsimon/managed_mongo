@@ -8,22 +8,13 @@ main() {
     mongod = new MongoDB("https://fastdl.mongodb.org/osx/mongodb-osx-x86_64-2.6.5.tgz", "", "host", 123);
   });
 
-  test("running flag updates when start and stop are called", () {
-    expect(mongod.running, isFalse);
-
-    return mongod.start()
-      .then((result){
-        expect(mongod.running, isTrue);
-
-        Db db = new Db("mongodb://localhost:27017");
-        return db.open().then((_) {
-          return mongod.stop().then((exitCode) {
-            expect(mongod.running, isFalse);
-            expect(exitCode, equals(0));
-          });
-        });
-      });
-
+  test("running flag updates when start and stop are called", () async {
+    await mongod.start();
+    Db db = new Db("mongodb://localhost:27017");
+    await db.open();
+    await db.close();
+    var exitCode = await mongod.stop();
+    expect(exitCode, equals(0));
   });
 
   test("throws error when downloadUrl is null", () {
