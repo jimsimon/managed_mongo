@@ -8,10 +8,32 @@ Managed Mongo is a simple wrapper for downloading and running a MongoDB server f
 Use cases
 ----------
 1. Utilizing a real MongoDB instance inside unit and integration tests
+```dart
+import "package:unittest/unittest.dart";
+import "package:managed_mongo/managed_mongo.dart";
+
+main() {
+  MongoDB mongodb;
+  setUp(() async {
+    var downloadUrl = "https://fastdl.mongodb.org/osx/mongodb-osx-x86_64-2.6.5.tgz";
+    var workDirectory = "mongo_work_directory";
+    var host = "localhost";
+    var port = 27015;
+    mongodb = new MongoDB(downloadUrl, workDirectory, host, port);
+    await mongodb.start();
+  });
+
+  tearDown(() async {
+    await mongodb.stop();
+  });
+
+  test("running flag updates when start and stop are called", () async {
+    // ...your code that uses MongoDB here...
+  });
+```
+
 2. Automatic installation and creation of MongoDB on an end-user's machine
 
-Example Code
--------------
 ```dart
 import "package:managed_mongo/managed_mongo.dart"
 
