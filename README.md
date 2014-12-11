@@ -5,9 +5,8 @@ Managed Mongo
 
 Managed Mongo is a simple wrapper for downloading and running a MongoDB server from inside a dart application.
 
-Use cases
-----------
-1. Utilizing a real MongoDB instance inside unit and integration tests
+Use Case 1: Utilizing a real MongoDB instance inside unit and integration tests
+--------------
 ```dart
 import "package:unittest/unittest.dart";
 import "package:managed_mongo/managed_mongo.dart";
@@ -32,8 +31,8 @@ main() {
   });
 ```
 
-2. Automatic installation and creation of MongoDB on an end-user's machine
-
+Use Case 2: Automatic installation and creation of MongoDB on an end-user's machine
+---------
 ```dart
 import "package:managed_mongo/managed_mongo.dart"
 
