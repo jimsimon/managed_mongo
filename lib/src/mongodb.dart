@@ -8,7 +8,7 @@ class MongoDB {
 
   Process _mongodProcess;
 
-  MongoDB(String downloadUrl, String workFolder, String host, int port) {
+  MongoDB(String downloadUrl, String workFolder, {String host: "localhost", int port: 27017}) {
     checkNotNull(downloadUrl, "downloadUrl cannot be null");
     checkArgument(downloadUrl.trim().isNotEmpty, "downloadUrl cannot be an empty string");
     checkNotNull(host, "host cannot be null");

@@ -16,9 +16,7 @@ main() {
   setUp(() async {
     var downloadUrl = "https://fastdl.mongodb.org/osx/mongodb-osx-x86_64-2.6.5.tgz";
     var workDirectory = "mongo_work_directory";
-    var host = "localhost";
-    var port = 27015;
-    mongodb = new MongoDB(downloadUrl, workDirectory, host, port);
+    mongodb = new MongoDB(downloadUrl, workDirectory);
     await mongodb.start();
   });
 
@@ -39,9 +37,7 @@ import "package:managed_mongo/managed_mongo.dart"
 main() async {
     var downloadUrl = "https://fastdl.mongodb.org/osx/mongodb-osx-x86_64-2.6.5.tgz";
     var workDirectory = "mongo_work_directory";
-    var host = "localhost";
-    var port = 27015;
-    MongoDB mongodb = new MongoDB(downloadUrl, workDirectory, host, port);
+    MongoDB mongodb = new MongoDB(downloadUrl, workDirectory);
     await mongodb.start();
     // your code here
     int exitCode = await mongodb.stop();

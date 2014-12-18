@@ -4,44 +4,48 @@ import "package:mongo_dart/mongo_dart.dart";
 
 main() {
   MongoDB mongod;
-  setUp(() {
-    mongod = new MongoDB("https://fastdl.mongodb.org/osx/mongodb-osx-x86_64-2.6.5.tgz", "", "host", 123);
+  setUp(() async {
+    mongod = new MongoDB("https://fastdl.mongodb.org/osx/mongodb-osx-x86_64-2.6.5.tgz", "");
+    await mongod.start();
   });
 
-  test("running flag updates when start and stop are called", () async {
-    await mongod.start();
-    Db db = new Db("mongodb://localhost:27017");
-    await db.open();
-    await db.close();
+  tearDown(() async {
     var exitCode = await mongod.stop();
     expect(exitCode, equals(0));
   });
 
+  test("running flag updates when start and stop are called", () async {
+    Db db = new Db("mongodb://localhost:27017");
+    await db.open();
+    expect(db.state, equals(State.OPEN));
+    await db.close();
+  });
+
   test("throws error when downloadUrl is null", () {
-    expect(() => new MongoDB(null, "host", "", 123), throwsArgumentError);
+    expect(() => new MongoDB(null, "workfolder"), throwsArgumentError);
   });
 
   test("throws error when downloadUrl is empty", () {
-    expect(() => new MongoDB(" ", "host", "", 123), throwsArgumentError);
+    expect(() => new MongoDB(" ", "workfolder"), throwsArgumentError);
   });
 
   test("throws error when downloadUrl has an invalid extension", () {
-    expect(() => new MongoDB("downloadUrl.bat", "host", "", 123), throwsArgumentError);
+    expect(() => new MongoDB("downloadUrl.bat", "workfolder"), throwsArgumentError);
   });
 
   test("throws error when host is null", () {
-    expect(() => new MongoDB("downloadUrl.zip", "", null, 123), throwsArgumentError);
+    expect(() => new MongoDB("downloadUrl.zip", "workfolder", host: null), throwsArgumentError);
   });
 
   test("throws error when host is empty", () {
-    expect(() => new MongoDB("downloadUrl.tgz", "", " ", 123), throwsArgumentError);
+    expect(() => new MongoDB("downloadUrl.tgz", "workfolder", host: " "), throwsArgumentError);
   });
 
   test("throws error when port is null", () {
-    expect(() => new MongoDB("downloadUrl.tar", "", "host", null), throwsArgumentError);
+    expect(() => new MongoDB("downloadUrl.tar", "workfolder", port: null), throwsArgumentError);
   });
 
   test("does not throw an error when workFolder is null", () {
-    expect(() => new MongoDB("downloadUrl.tar.gz", null, "host", 123), returnsNormally);
+    expect(() => new MongoDB("downloadUrl.tar.gz", null), returnsNormally);
   });
 }
