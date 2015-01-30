@@ -1,3 +1,4 @@
+import "dart:io";
 import "package:unittest/unittest.dart";
 import "package:managed_mongo/managed_mongo.dart";
 import "package:mongo_dart/mongo_dart.dart";
@@ -5,7 +6,14 @@ import "package:mongo_dart/mongo_dart.dart";
 main() {
   MongoDB mongod;
   setUp(() async {
-    mongod = new MongoDB("https://fastdl.mongodb.org/osx/mongodb-osx-x86_64-2.6.5.tgz", "", host: "127.0.0.1", port: 27015);
+    final hostname = "127.0.0.1";
+    final port = 27015;
+    final workDirectory = "";
+    if (Platform.isMacOS) {
+      mongod = new MongoDB("https://fastdl.mongodb.org/osx/mongodb-osx-x86_64-2.6.7.tgz", workDirectory, host: hostname, port: port);
+    } else if (Platform.isLinux) {
+      mongod = new MongoDB("https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-2.6.7.tgz", workDirectory, host: hostname, port: port);
+    }
     await mongod.start();
   });
 
