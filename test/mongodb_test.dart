@@ -5,7 +5,7 @@ import "package:mongo_dart/mongo_dart.dart";
 main() {
   MongoDB mongod;
   setUp(() async {
-    mongod = new MongoDB("https://fastdl.mongodb.org/osx/mongodb-osx-x86_64-2.6.5.tgz", "");
+    mongod = new MongoDB("https://fastdl.mongodb.org/osx/mongodb-osx-x86_64-2.6.5.tgz", "", host: "127.0.0.1", port: 27015);
     await mongod.start();
   });
 
@@ -14,8 +14,8 @@ main() {
     expect(exitCode, equals(0));
   });
 
-  test("running flag updates when start and stop are called", () async {
-    Db db = new Db("mongodb://localhost:27017");
+  test("runs and shuts down on specified host and port when start and stop are called", () async {
+    Db db = new Db("mongodb://127.0.0.1:27015");
     await db.open();
     expect(db.state, equals(State.OPEN));
     await db.close();
@@ -48,4 +48,5 @@ main() {
   test("does not throw an error when workFolder is null", () {
     expect(() => new MongoDB("downloadUrl.tar.gz", null), returnsNormally);
   });
+
 }

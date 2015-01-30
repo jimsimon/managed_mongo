@@ -78,7 +78,8 @@ class MongoDB {
   Future<Process> _createProcess(String mongodPath, String dataDbPath) async {
     Directory dataDbDirectory = new Directory(dataDbPath);
     dataDbDirectory.createSync(recursive: true);
-    return await Process.start(mongodPath, ["--dbpath", dataDbPath]);
+    var arguments = ["--dbpath", dataDbPath, "--bind_ip", host, "--port", port.toString()];
+    return await Process.start(mongodPath, arguments);
   }
 
   Future _run(Directory mongoDirectory) async {
@@ -103,7 +104,7 @@ class MongoDB {
 
     process.exitCode.then((exitCode) {
       if (exitCode != 0) {
-        completer.completeError("Failed to start mongod due to mongod exit code $exitCode");
+        completer.completeError("Failed to start mongod due to error code $exitCode");
       }
     });
 
