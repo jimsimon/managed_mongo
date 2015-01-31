@@ -56,14 +56,6 @@ The download url must point a properly encoded file with one of the following ex
 
 All other file extensions will result in an error.
 
-Dependency Entry (pubspec.yaml)
-----------------
-```
-dependencies:
-  managed_mongo:
-    git: https://github.com/jimsimon/managed_mongo.git
-```
-
 TODO
 -----
 2. Add documentation -- dartdoc
