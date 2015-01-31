@@ -5,12 +5,9 @@ author: Jim Simon <jim.j.simon@gmail.com>
 homepage: https://github.com/jimsimon/managed_mongo
 documentation: https://github.com/jimsimon/managed_mongo/docs
 dependencies:
-  path: 'any'
-  archive: 'any'
-  dart_commons:
-    git:
-      url: https://github.com/jimsimon/dart_commons
-      ref: develop
+  path: ">=1.3.2 <2.0.0"
+  archive: ">=1.0.18 <2.0.0"
+  dart_commons: ">=1.0.0 <2.0.0"
 dev_dependencies:
   unittest: 'any'
   mongo_dart: 'any'
