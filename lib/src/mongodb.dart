@@ -1,14 +1,24 @@
 part of managed_mongo;
 
 class MongoDB {
-  final RegExp EXTENSION_REG_EXP = new RegExp(r"(.zip|.tar.gz|.tar|.tgz)");
+  final RegExp _EXTENSION_REG_EXP = new RegExp(r"(.zip|.tar.gz|.tar|.tgz)");
 
   String downloadUrl, workFolder, host, _extension;
   int port;
 
   Process _mongodProcess;
 
-  MongoDB(String downloadUrl, String workFolder, {String host: "localhost", int port: 27017}) {
+  /**
+   * Facilitates the management of a MongoDB instance.
+   *
+   * [downloadUrl] - A URL for a valid MongoDB distribution (supported file extensions are zip, tar, tar.gz, and tgz).
+   * (Optional) [workFolder] - The folder to download, extract, and run the MongoDB distribution from.  Defaults to the root of the library or application.
+   * (Optional) [host] - The hostname to bind the MongoDB instance to.  Defaults to "localhost".
+   * (optional) [port] - The port number to bind the MongoDB instance to.  Defaults to 27017.
+   *
+   * If the distribution specified by [downloadUrl] has already been downloaded, the download is skipped and the cached distribution is used.
+   */
+  MongoDB(String downloadUrl, {String workFolder: "", String host: "localhost", int port: 27017}) {
     checkNotNull(downloadUrl, "downloadUrl cannot be null");
     checkArgument(downloadUrl.trim().isNotEmpty, "downloadUrl cannot be an empty string");
     checkNotNull(host, "host cannot be null");
@@ -22,22 +32,33 @@ class MongoDB {
     this.port = port;
   }
 
+  /**
+   * Downloads and starts the MongoDB instance.
+   */
   Future start() async {
     File file = await _download();
     Directory mongoDirectory = await _extract(file);
     return _run(mongoDirectory);
   }
 
+  /**
+   * Stops the MongoDB instance and returns the process's exit code.
+   *
+   * This method does nothing if
+   */
   Future<int> stop() async {
-    _mongodProcess.kill();
-    return await _mongodProcess.exitCode;
+    if (_mongodProcess != null) {
+      _mongodProcess.kill();
+      return _mongodProcess.exitCode;
+    }
+    return new Future.value();
   }
 
   String _checkFileExtension(String variableName, String fileNameOrPath) {
-    if (!EXTENSION_REG_EXP.hasMatch(fileNameOrPath)) {
+    if (!_EXTENSION_REG_EXP.hasMatch(fileNameOrPath)) {
       throw new ArgumentError.value(fileNameOrPath, "downloadUrl");
     }
-    return EXTENSION_REG_EXP.firstMatch(fileNameOrPath).group(0);
+    return _EXTENSION_REG_EXP.firstMatch(fileNameOrPath).group(0);
   }
 
   Future _download() async {

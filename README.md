@@ -13,8 +13,7 @@ main() {
   MongoDB mongodb;
   setUp(() async {
     var downloadUrl = "https://fastdl.mongodb.org/osx/mongodb-osx-x86_64-2.6.5.tgz";
-    var workDirectory = "mongo_work_directory";
-    mongodb = new MongoDB(downloadUrl, workDirectory);
+    mongodb = new MongoDB(downloadUrl);
     await mongodb.start();
   });
 
@@ -34,8 +33,7 @@ import "package:managed_mongo/managed_mongo.dart"
 
 main() async {
     var downloadUrl = "https://fastdl.mongodb.org/osx/mongodb-osx-x86_64-2.6.5.tgz";
-    var workDirectory = "mongo_work_directory";
-    MongoDB mongodb = new MongoDB(downloadUrl, workDirectory);
+    MongoDB mongodb = new MongoDB(downloadUrl);
     await mongodb.start();
     // your code here
     int exitCode = await mongodb.stop();
@@ -56,6 +54,5 @@ All other file extensions will result in an error.
 
 TODO
 -----
-2. Add documentation -- dartdoc
-3. Further customization options (i.e. other command line flags)
-4. General code cleanup and refactoring
+1. Further customization options (i.e. other command line flags)
+2. General code cleanup and refactoring
