@@ -1,5 +1,3 @@
-**NOTE: This project is still under heavy development and is subject to change.**
-
 Managed Mongo
 =============
 
