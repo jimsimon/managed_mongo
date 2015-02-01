@@ -86,6 +86,9 @@ class MongoDB {
     Completer completer = new Completer();
 
     String mongodPath = join(mongoDirectory.path, "bin", "mongod");
+    if (Platform.isWindows) {
+      mongodPath = join(mongodPath, ".exe");
+    }
     String dataDbPath = join(mongoDirectory.path, "data", "db");
 
     await _ensureMongodIsExecutable(mongodPath);
