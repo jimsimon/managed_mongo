@@ -37,7 +37,7 @@ class MongoDB {
    */
   Future start() async {
     Directory workFolderDirectory = new Directory(workFolder);
-    if (!workFolderDirectory.existsSync()) {
+    if (workFolder != "" && !workFolderDirectory.existsSync()) {
       workFolderDirectory.create(recursive: true);
     }
     File file = await _download();
@@ -82,8 +82,8 @@ class MongoDB {
   }
 
   Directory _extract(File file) {
-    String extractedDirectoryName = Strings.replaceLast(file.path, _extension, "");
-    Directory extractedDirectory = new Directory(join(workFolder, extractedDirectoryName));
+    String extractedDirectoryPath = Strings.replaceLast(file.path, _extension, "");
+    Directory extractedDirectory = new Directory(extractedDirectoryPath);
     if (!extractedDirectory.existsSync()) {
       print("Extracting ${file.path}");
       var archive = _getArchiveForFile(file);
@@ -119,6 +119,7 @@ class MongoDB {
     await _ensureMongodIsExecutable(mongodPath);
     Process process = await _createProcess(mongodPath, dataDbPath);
 
+    print("process started");
     var processStdout = process.stdout.asBroadcastStream();
     stdout.addStream(processStdout);
     stderr.addStream(process.stderr);

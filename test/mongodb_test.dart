@@ -3,10 +3,9 @@ import "package:unittest/unittest.dart";
 import "package:managed_mongo/managed_mongo.dart";
 import "package:mongo_dart/mongo_dart.dart";
 
-createPlatformSpecificMongoDB() {
+createPlatformSpecificMongoDB({workDirectory: ""}) {
   final hostname = "127.0.0.1";
   final port = 27015;
-  final workDirectory = "";
   if (Platform.isMacOS) {
     return new MongoDB("https://fastdl.mongodb.org/osx/mongodb-osx-x86_64-2.6.7.tgz", workFolder: workDirectory, host: hostname, port: port);
   } else if (Platform.isLinux) {
@@ -16,23 +15,33 @@ createPlatformSpecificMongoDB() {
 }
 
 main() {
-  MongoDB mongod;
-  setUp(() async {
-
-    mongod = createPlatformSpecificMongoDB();
-    await mongod.start();
-  });
-
-  tearDown(() async {
-    var exitCode = await mongod.stop();
-    expect(exitCode, equals(0));
-  });
 
   test("runs and shuts down on specified host and port when start and stop are called", () async {
+    MongoDB mongodb = createPlatformSpecificMongoDB();
+    await mongodb.start();
     Db db = new Db("mongodb://127.0.0.1:27015");
     await db.open();
     expect(db.state, equals(State.OPEN));
     await db.close();
+    var exitCode = await mongodb.stop();
+    expect(exitCode, equals(0));
+  });
+
+  test("allows running from a custom work directory", () async {
+    MongoDB mongodb = createPlatformSpecificMongoDB(workDirectory: "mongo");
+    await mongodb.start();
+    Db db = new Db("mongodb://127.0.0.1:27015");
+    await db.open();
+    expect(db.state, equals(State.OPEN));
+    await db.close();
+    await mongodb.stop();
+    var exitCode = await mongodb.stop();
+    expect(exitCode, equals(0));
+  });
+
+  test("stop has no side effects when start hasn't been called", () async {
+    MongoDB mongoDb = createPlatformSpecificMongoDB();
+    await mongoDb.stop();
   });
 
   test("throws error when downloadUrl is null", () {
@@ -63,8 +72,4 @@ main() {
     expect(() => new MongoDB("downloadUrl.tar.gz", workFolder: null), returnsNormally);
   });
 
-  test("stop has no side effects when start hasn't been called", () async {
-    MongoDB mongoDb = createPlatformSpecificMongoDB();
-    await mongoDb.stop();
-  });
 }

@@ -34,3 +34,4 @@ pubspec.lock
 
 # Ignore mongodb folder (only needed until cleanup logic is coded)
 test/mongodb-*
+test/mongo
