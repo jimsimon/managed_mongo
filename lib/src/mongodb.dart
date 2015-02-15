@@ -36,6 +36,10 @@ class MongoDB {
    * Downloads and starts the MongoDB instance.
    */
   Future start() async {
+    Directory workFolderDirectory = new Directory(workFolder);
+    if (!workFolderDirectory.existsSync()) {
+      workFolderDirectory.create(recursive: true);
+    }
     File file = await _download();
     Directory mongoDirectory = await _extract(file);
     return _run(mongoDirectory);
