@@ -119,7 +119,6 @@ class MongoDB {
     await _ensureMongodIsExecutable(mongodPath);
     Process process = await _createProcess(mongodPath, dataDbPath);
 
-    print("process started");
     var processStdout = process.stdout.asBroadcastStream();
     stdout.addStream(processStdout);
     stderr.addStream(process.stderr);
