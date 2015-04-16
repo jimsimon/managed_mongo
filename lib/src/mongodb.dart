@@ -120,14 +120,14 @@ class MongoDB {
     Process process = await _createProcess(mongodPath, dataDbPath);
 
     var processStdout = process.stdout.asBroadcastStream();
-    stdout.addStream(processStdout);
-    stderr.addStream(process.stderr);
+    process.stderr.pipe(stderr);
 
     processStdout.listen((data) {
       String line = new String.fromCharCodes(data);
       if (line.contains("waiting for connections on port")) {
         completer.complete();
       }
+      stdout.write(line);
     });
 
     process.exitCode.then((exitCode) {
