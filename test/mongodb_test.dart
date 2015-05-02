@@ -1,5 +1,7 @@
+@Timeout(const Duration(minutes: 2))
+
 import "dart:io";
-import "package:unittest/unittest.dart";
+import "package:test/test.dart";
 import "package:managed_mongo/managed_mongo.dart";
 import "package:mongo_dart/mongo_dart.dart";
 
