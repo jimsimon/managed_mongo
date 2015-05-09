@@ -1,8 +1,8 @@
+[![Build Status](https://travis-ci.org/jimsimon/managed_mongo.svg?branch=master)](https://travis-ci.org/jimsimon/managed_mongo)
+[![Pub](https://img.shields.io/pub/v/managed_mongo.svg)]()
+
 Managed Mongo
 =============
-[![Build Status](https://travis-ci.org/jimsimon/managed_mongo.svg?branch=master)](https://travis-ci.org/jimsimon/managed_mongo)
-(Currently failing on Dart 1.8 because Dart Test Runner doesn't support the --enable-async VM flag)
-
 Managed Mongo is a simple wrapper for downloading and running a MongoDB server from inside a dart application.
 
 Use Case 1: Utilizing a real MongoDB instance inside unit and integration tests
